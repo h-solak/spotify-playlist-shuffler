@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { spotifyApiBaseAxios, removeAccessToken } from "../api/axiosConfig";
 
 const CLIENT_ID = "a7190502be9547ff9a5fb3b916e3bcec";
-const REDIRECT_URL = "https://h-solak.github.io/spotify-playlist-shuffler";
+const REDIRECT_URL = "https://spotify-playlist-shuffler.netlify.app/";
 // const REDIRECT_URL = "http://localhost:5173";
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const RESPONSE_TYPE = "token";
