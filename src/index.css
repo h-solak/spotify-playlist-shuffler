@@ -11,6 +11,10 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.dark-bg {
+  background-color: #333333 !important;
+}
+
 /*animated checkmark from https://bbbootstrap.com/snippets/animated-checkmark-50934051*/
 
 .checkmark-wrapper {

@@ -46,7 +46,7 @@ const ConfirmDialogModal = ({
         >
           <Button
             variant="outlined"
-            color="error"
+            color="white"
             onClick={() => setIsModalOpen(false)}
           >
             No

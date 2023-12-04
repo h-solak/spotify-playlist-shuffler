@@ -23,6 +23,9 @@ const theme = createTheme({
     error: {
       main: "#950101",
     },
+    white: {
+      main: "#fff",
+    },
   },
   typography: {
     fontFamily: ["Arial", "sans-serif"].join(","),

@@ -9,14 +9,15 @@ import { getRandomNum } from "../../utils/getRandomNum";
 import toast from "react-hot-toast";
 import ConfirmDialogModal from "../../components/ConfirmDialogModal";
 import Modal from "../../components/Modal";
-import Lottie from "lottie-react";
-import LottieDice from "../../assets/lottieDice.json";
 import Checkmark from "../../components/Checkmark";
+import ShuffleLoader from "../../components/ShuffleLoader";
+import StopIcon from "@mui/icons-material/Stop";
 
 const Playlist = ({ playlist }) => {
   const [progress, setProgress] = useState({
     isShuffling: false,
     progress: 0,
+    stopAction: false,
   });
   const [confirmShuffleModal, setConfirmShuffleModal] = useState(false);
   const [loadingModal, setLoadingModal] = useState(false);
@@ -27,41 +28,48 @@ const Playlist = ({ playlist }) => {
     // window.open(playlist.external_urls.spotify, "_blank");
   };
 
-  const shuffle = async (id, playlistName) => {
+  const shuffle = async (id) => {
     setLoadingModal(true);
-    const totalTracks = parseInt(playlist?.tracks?.total);
-
     setProgress({
       isShuffling: true,
       progress: 0,
+      stopAction: false,
     });
+    const totalTracks = parseInt(playlist?.tracks?.total);
     for (let i = 0; i < totalTracks; i++) {
-      await reorderPlaylistTracks(id, getRandomNum(totalTracks - 1), i);
-      setProgress({
-        isShuffling: true,
-        progress: i,
-      });
+      if (!progress.stopAction) {
+        console.log("nası", progress.stopAction);
+        await reorderPlaylistTracks(id, getRandomNum(totalTracks - 1), i);
+        setProgress((oldProgress) => ({
+          ...oldProgress,
+          progress: i,
+        }));
+      }
     }
-    setProgress({
+    setProgress((oldProgress) => ({
+      ...oldProgress,
       isShuffling: true,
       progress: totalTracks,
-    });
-    setTimeout(
-      () =>
-        setProgress({
-          isShuffling: false,
-          progress: 0,
-        }),
-      250
-    );
+    }));
+    setTimeout(resetProgress, 250);
     setTimeout(() => setLoadingModal(false), 3000); //if user doesnt close the modal
   };
 
-  useEffect(() => console.log(progress.progress), [progress]);
+  const resetProgress = () =>
+    setProgress({
+      isShuffling: false,
+      progress: 0,
+      stopAction: false,
+    });
+  useEffect(() => console.log(progress.stopAction), [progress.stopAction]);
+  // useEffect(() => {
+  //   if (progress.stopAction) {
+  //     resetProgress();
+  //   }
+  // }, [progress.stopAction]);
   return (
-    <Grid item xs={12} md={4} paddingY={1}>
+    <Grid item xs={12} sm={6} md={4} paddingY={0.4}>
       <Box
-        paddingX={1}
         paddingY={1}
         display={"flex"}
         alignItems={"center"}
@@ -69,16 +77,29 @@ const Playlist = ({ playlist }) => {
         className="w-100"
         sx={{ cursor: "pointer" }}
       >
-        <Tooltip title="Shuffle">
+        <Tooltip title={progress.isShuffling ? "Stop Shuffling" : "Shuffle"}>
           <Button
             variant="contained"
-            color={progress.isShuffling ? "info" : "highlight"}
+            color={progress.isShuffling ? "error" : "highlight"}
             sx={{ height: 45 }}
-            onClick={() => {
-              setConfirmShuffleModal(true);
-            }}
+            onClick={
+              progress.isShuffling
+                ? () =>
+                    setProgress({
+                      isShuffling: false,
+                      progress: 0,
+                      stopAction: true,
+                    })
+                : () => {
+                    setConfirmShuffleModal(true);
+                  }
+            }
           >
-            <ShuffleIcon sx={{ fontSize: 20 }} />
+            {progress.isShuffling ? (
+              <StopIcon sx={{ fontSize: 20 }} />
+            ) : (
+              <ShuffleIcon sx={{ fontSize: 20 }} />
+            )}
           </Button>
         </Tooltip>
 
@@ -124,23 +145,10 @@ const Playlist = ({ playlist }) => {
           width={300}
         >
           {progress.isShuffling ? (
-            <>
-              <Lottie
-                animationData={LottieDice}
-                loop={true}
-                style={{
-                  height: 150,
-                  width: 150,
-                }}
-              />
-              <Typography textAlign={"center"} fontSize={18}>
-                Wait, we are getting there!
-              </Typography>
-              <Typography textAlign={"center"} color={"secondary.main"}>
-                {progress.progress} out of {playlist?.tracks?.total} track(s)
-                are shuffled!
-              </Typography>
-            </>
+            <ShuffleLoader
+              progress={progress.progress}
+              totalTracks={playlist?.tracks?.total}
+            />
           ) : (
             <>
               <Checkmark size={100} />

@@ -1,9 +1,11 @@
 import React from "react";
 import { SPOTIFY_AUTH_LINK } from "../services/user";
-import { Box, Button, Typography, Link } from "@mui/material";
+import { Box, Button, Typography, Link, useMediaQuery } from "@mui/material";
 import SpotifyLogo from "../assets/spotify.svg";
 
 const Landing = () => {
+  const isSmScreen = useMediaQuery("(max-width:600px)");
+
   return (
     <Box
       className="absolute-center"
@@ -12,14 +14,18 @@ const Landing = () => {
       alignItems={"center"}
       gap={1}
     >
-      <Typography>Start shuffling!</Typography>
+      <Typography textAlign={"center"}>
+        Shuffle your Spotify playlists easily for a fresh musical experience!
+      </Typography>
       <Link href={SPOTIFY_AUTH_LINK} underline="none">
         <Button
           variant="outlined"
           startIcon={<img src={SpotifyLogo} width={20} />}
           sx={{ textTransform: "capitalize" }}
         >
-          <Typography>Login to your account</Typography>
+          <Typography>
+            Login {!isSmScreen ? " to your account" : null}
+          </Typography>
         </Button>
       </Link>
     </Box>
